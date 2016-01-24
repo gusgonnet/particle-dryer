@@ -5,6 +5,7 @@
 #define DHTTYPE  DHT22
 #define DHT_SAMPLE_INTERVAL   5000
 #define PUSHBULLET_NOTIF_HOME "pushbulletHOME"
+#define AWS_EMAIL "awsEmail"
 
 //declaration
 void dht_wrapper();
@@ -40,6 +41,11 @@ void setup() {
   bool success = Particle.function("resetDryer", resetDryer);
   if (not success) {
     Particle.publish("ERROR", "Failed to register function resetDryer", 60, PRIVATE);
+  }
+
+  success = Particle.function("sendEmail", sendEmail);
+  if (not success) {
+    Particle.publish("ERROR", "Failed to register function sendEmail", 60, PRIVATE);
   }
  
 }
@@ -88,6 +94,7 @@ void loop() {
         dryer_on = true;
         humidity_samples_below_10 = 0;
         Particle.publish(PUSHBULLET_NOTIF_HOME, "Starting drying cycle", 60, PRIVATE);
+        Particle.publish(AWS_EMAIL, "Starting drying cycle", 60, PRIVATE);
       }
  
       //if humidity goes below 10% and temperature goes over 50 degrees for a number of samples
@@ -101,6 +108,7 @@ void loop() {
       //if there are 5 samples below 10% then we are sure it's almost done
       if ( dryer_on and (humidity_samples_below_10 >= 5) ) {
         Particle.publish(PUSHBULLET_NOTIF_HOME, "Your clothes are dry", 60, PRIVATE);
+        Particle.publish(AWS_EMAIL, "Your clothes are dry", 60, PRIVATE);
         dryer_on = false;
       }
 
@@ -120,5 +128,11 @@ void loop() {
 //you could call this function with the DO Button, the blynk app, the Porter app or even Particle dev
 int resetDryer(String args) {
   dryer_on = false;
+  return 0;
+}
+
+//testing AWS email notifications
+int sendEmail(String args) {
+  Particle.publish(AWS_EMAIL, "Your clothes are dry", 60, PRIVATE);
   return 0;
 }
