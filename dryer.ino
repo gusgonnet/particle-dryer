@@ -23,7 +23,7 @@ char resultstr[64];
 //String to store the sensor humidity
 char humiditystr[64];
 
-char VERSION[64] = "0.11";
+char VERSION[64] = "0.12";
 bool dryer_on = false;
 String dryer_stat = "";
 int humidity_samples_below_10 = 0;
@@ -36,7 +36,7 @@ void setup() {
   Particle.variable("humidity", humiditystr, STRING);
   Particle.variable("dryer_stat", dryer_stat);
 
-  Particle.publish("DHT22 - firmware version", VERSION, 60, PRIVATE);
+  Particle.publish("Dryer - firmware version", VERSION, 60, PRIVATE);
 
   bool success = Particle.function("resetDryer", resetDryer);
   if (not success) {
